@@ -1,6 +1,4 @@
 package pf;
-
-import java.util.Collection;
 import java.util.Random;
 
 
@@ -17,7 +15,7 @@ public class Boat
 		return new BoatState(_x + r.nextGaussian()*Math.sqrt(Boat.gps_var), 
 						 _y + r.nextGaussian()*Math.sqrt(Boat.gps_var),
 						 _heading +r.nextGaussian()*Math.sqrt(Boat.heading_var),
-						 _dheading + r.nextGaussian()*Math.sqrt(Boat.gps_var),
+						 _heading + r.nextGaussian()*Math.sqrt(Boat.heading_var),
 						 _ground_speed + r.nextGaussian()*Math.sqrt(Boat.ground_speed_var));
 	}
 	

@@ -1,5 +1,6 @@
 package pf;
 import java.util.Collection;
+import java.util.Random;
 
 import pf.Boat;
 
@@ -16,13 +17,19 @@ public class BoatParticle implements Particle<BoatState,BoatMeasurement> {
 		this.weight = w;
 	}
 	
-	
 	//dt is time step
-	public BoatState Propagate(double dt)
+	public Particle<BoatState,BoatMeasurement> Propagate()
 	{
+		return new BoatParticle(this.Propagate(0.5), this.weight);
+		
+	}	
+	//dt is time step
+	BoatState Propagate(double dt)
+	{
+		Random r = new Random();
 		double x1, y1, heading1; 
 		double d = state.ground_speed*dt; //distance traveled
-		double alpha = state.dheading*dt;
+		double alpha = state.dheading*dt + r.nextGaussian()*0.034; //2 degree;
 		double theta = state.heading;
 		double beta = d/state.length * Math.tan(alpha);
 		if (Math.abs(beta) >= 0.001)
@@ -37,7 +44,7 @@ public class BoatParticle implements Particle<BoatState,BoatMeasurement> {
 		}
 		heading1 = (theta+beta)%(2.0*Math.PI);
 		//we assume ground speed and angular velocity are not changing (we do not measure acceleration and angular acceleration) 
-		return new BoatState(x1, y1, heading1,state.dheading, state.ground_speed);
+		return new BoatState(x1, y1, heading1,state.heading, state.ground_speed);
 		
 	}
 	@Override
