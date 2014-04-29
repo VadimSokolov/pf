@@ -1,4 +1,4 @@
-package pf.test;
+package pf;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,9 +6,9 @@ import java.util.List;
 
 
 public class SamplingWheel {
-	public static List<Double> Sample(List<Double> weights, List<Double> particles)
+	public static List<Integer> Sample(List<Double> weights)
 	{
-		List<Double> res = new ArrayList<Double>();
+		List<Integer> res = new ArrayList<Integer>();
 		int N = weights.size();
 		int index = (int)(Math.random() * N);
 		double beta = 0.0;
@@ -21,7 +21,7 @@ public class SamplingWheel {
 				beta -= weights.get(index);
 				index = (index+1) % N;				
 			}
-			res.add(particles.get(index));
+			res.add(index);
 		}
 		return res;
 	}

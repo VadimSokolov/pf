@@ -1,4 +1,4 @@
-package pf.test;
+package pf;
 
 import java.util.Collection;
 
