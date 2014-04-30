@@ -23,7 +23,17 @@ public final class Utils {
 			this.lon = _lon;
 		}
 	}	
-	
+	public static GeoPoint proj_to_world_mercator(double lat, double lon) {
+		double x,y;
+		lat = Utils.to_rad(lat);
+		lon = Utils.to_rad(lon);
+		double lon0 = Utils.to_rad(-87.627778);
+		
+		x = Utils.earth_a*(lon - lon0);
+		y = Utils.earth_a*(Math.log(Math.tan(lat/2 + Math.PI/4)));
+		return new GeoPoint(x,y);
+		
+	}
 	//Calculates geocentric radius of the earth at a given latitude
 	//http://en.wikipedia.org/wiki/Earth_radius
 	public static double geocentric_radius(double lat){

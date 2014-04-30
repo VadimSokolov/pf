@@ -6,9 +6,9 @@ import java.util.List;
 
 
 public class SamplingWheel {
-	public static List<Integer> Sample(List<Double> weights)
+	public static ArrayList<Integer> Sample(List<Double> weights)
 	{
-		List<Integer> res = new ArrayList<Integer>();
+		ArrayList<Integer> res = new ArrayList<Integer>();
 		int N = weights.size();
 		int index = (int)(Math.random() * N);
 		double beta = 0.0;

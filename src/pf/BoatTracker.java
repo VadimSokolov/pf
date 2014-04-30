@@ -1,4 +1,5 @@
 package pf;
+import java.awt.List;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -30,7 +31,7 @@ public class BoatTracker {
 		}
 		double current_time = 142020.5;//initial time
 		int N = 500;
-		ArrayList<BoatParticle> particles = new ArrayList<BoatParticle>(N); 
+		BoatParticle[] particles = new BoatParticle[N]; 
 		BoatState s;
 		File file = new File("pf-out.txt");
 		if (!file.exists()) {
@@ -53,11 +54,12 @@ public class BoatTracker {
 		for (int i = 0; i< N; i++)
 		{
 			s = Boat.NoisBoatState(latN[0], lonE[0], hdgT[0], 0, sowK[0]);
-			particles.add(new BoatParticle(s,1));	
+			particles[i] = new BoatParticle(s,1);	
 //			System.out.println(s.x + ","+s.y);
 		}
 		int current_ind = 1;
-		ArrayList<BoatParticle> posterior_particles = new ArrayList<BoatParticle>(N); 
+		BoatParticle[] posterior_particles = new BoatParticle[N]; 
+		BoatParticle[] posterior_particles1 = new BoatParticle[N]; 
 		ArrayList<BoatMeasurement> m = new ArrayList<BoatMeasurement>(1);
 		BoatMeasurement melement = new BoatMeasurement();
 		m.add(melement);
@@ -77,8 +79,21 @@ public class BoatTracker {
 					melement.lat = latN[current_ind];
 					melement.lon = lonE[current_ind];
 					m.set(0, melement);
-					posterior_particles.set(i, (BoatParticle)particles.get(i).ApplyFilter(m));
+					posterior_particles1[i] = (BoatParticle)particles[i].ApplyFilter(m);
+					
 				}
+				//resample
+				//get weights
+				ArrayList<Double> w = new ArrayList<Double>(N);
+				for (int j = 0; j< N; j++)
+				{
+					w.add(posterior_particles1[j].weight);
+				}
+				ArrayList<Integer> rr = SamplingWheel.Sample(w);
+				for (int j = 0; j< N; j++)
+				{
+					posterior_particles[j] = posterior_particles1[rr.get(j)];
+				}				
 				current_ind++;
 			}
 			else {
@@ -90,7 +105,7 @@ public class BoatTracker {
 //						// TODO Auto-generated catch block
 //						e.printStackTrace();
 //					}
-					posterior_particles.add((BoatParticle)particles.get(i).Propagate());
+					posterior_particles[i] = (BoatParticle)particles[i].Propagate();
 				}				
 
 			}
@@ -98,12 +113,12 @@ public class BoatTracker {
 			double meany = 0;
 			for (int i = 0; i< N; i++)
 			{
-				meanx += posterior_particles.get(i).state.x;
-				meany += posterior_particles.get(i).state.y;
+				meanx += posterior_particles[i].state.x;
+				meany += posterior_particles[i].state.y;
 
 			}		
 			try {
-			bw.write(current_time+","+meanx + ","+meany+"\n");
+			bw.write(current_time+","+meany/N + ","+meanx/N+"\n");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -8,6 +8,8 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import pf.Utils.GeoPoint;
+
 public class JUnittest {
 
 	@Test
@@ -150,5 +152,22 @@ public class JUnittest {
 		double dist = Utils.bearing(pt.lat, pt.lon, pt1.lat, pt1.lon);
 		assertEquals(323.31,dist,0.1);
 	}	
+	@Test
+	public void test_proj_to_world_mercator()
+	{
+		GeoPoint pt1 = Utils.proj_to_world_mercator(Utils.to_decimal_degrees(41, 52, 55), -Utils.to_decimal_degrees(87,37,40));
+		GeoPoint pt2 = Utils.proj_to_world_mercator(Utils.to_decimal_degrees(41, 52, 55), -Utils.to_decimal_degrees(87,37,41));
+		double dist = Math.sqrt(Math.pow(pt1.lat - pt2.lat,2) + Math.pow(pt1.lon - pt2.lon,2));
+		assertEquals(dist,30.8530444444,0.1);//10cm
+	}
+	@Test
+	public void test_proj_to_world_mercator1()
+	{
+		GeoPoint pt1 = Utils.proj_to_world_mercator(Utils.to_decimal_degrees(41, 52, 55), -Utils.to_decimal_degrees(87,37,40));
+		GeoPoint pt2 = Utils.proj_to_world_mercator(Utils.to_decimal_degrees(41, 52, 56), -Utils.to_decimal_degrees(87,37,40));
+		double dist = Math.sqrt(Math.pow(pt1.lat - pt2.lat,2) + Math.pow(pt1.lon - pt2.lon,2));
+		assertEquals(dist,30.8530444444,0.1);//10cm
+	}	
+	
 
 }

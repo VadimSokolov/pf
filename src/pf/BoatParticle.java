@@ -27,25 +27,16 @@ public class BoatParticle implements Particle<BoatState,BoatMeasurement> {
 	BoatState Propagate(double dt)
 	{
 		Random r = new Random();
-		double x1, y1, heading1; 
+		double x1,y1,dx,dy, heading1, speed1; 
 		double d = state.ground_speed*dt; //distance traveled
-		double alpha = state.dheading*dt + r.nextGaussian()*0.034; //2 degree;
-		double theta = state.heading;
-		double beta = d/state.length * Math.tan(alpha);
-		if (Math.abs(beta) >= 0.001)
-		{
-			double R = state.length/Math.tan(alpha);
-			x1 = state.x - Math.sin(theta)*R + Math.sin(theta+beta)*R;
-			y1 = state.y + Math.cos(theta)*R - Math.cos(theta+beta)*R;			
-		}
-		else {
-			x1 = state.x + d*Math.cos(theta);
-			y1 =  state.y + d*Math.sin(theta);
-		}
-		heading1 = (theta+beta)%(2.0*Math.PI);
+        dy = -d * Math.sin(2*Math.PI-Math.PI*state.heading/180);
+        dx = d * Math.cos(2*Math.PI-Math.PI*state.heading/180);
+		y1 = state.y + (dy*180)/(Utils.R*Math.PI*Math.cos(state.x*Math.PI/180));
+		x1 = state.x + (dx*180)/(Utils.R*Math.PI);
+		heading1 = state.heading + r.nextGaussian()*0.034; //2 degree;
+		speed1 = state.ground_speed + r.nextGaussian()*1;// 1 m/s
 		//we assume ground speed and angular velocity are not changing (we do not measure acceleration and angular acceleration) 
-		return new BoatState(x1, y1, heading1,state.heading, state.ground_speed);
-		
+		return new BoatState(x1, y1, heading1, speed1);		
 	}
 	@Override
 	public Particle<BoatState,BoatMeasurement> ApplyFilter(Collection<BoatMeasurement> m) {
@@ -54,7 +45,7 @@ public class BoatParticle implements Particle<BoatState,BoatMeasurement> {
 		double weight1 = 1.0;
 		for (BoatMeasurement item : m)
 		{
-			weight1 *= this.Likelihood(item,Boat.gps_var);
+			weight1 *= this.Likelihood(item,Boat.gps_std*Boat.gps_std);
 		}
 		return new BoatParticle(state1, weight1);
 	}
